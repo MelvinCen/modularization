@@ -1,0 +1,4 @@
+<resources>
+    <string name="base_name">Base</string>
+    <string name="base_loading">加载中</string>
+</resources>

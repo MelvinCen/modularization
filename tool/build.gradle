@@ -1,0 +1,45 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+
+    }
+    //用java1.8编译
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    //资源前缀
+    resourcePrefix "tool_"
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //Rxlife
+    api (rootProject.ext.dependencies["RxComponent"]){
+        exclude group: 'io.reactivex.rxjava2',module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2',module: 'rxandroid'
+    }
+    api (rootProject.ext.dependencies["LifeCycleAndroidLifeCycle"]){
+        exclude group: 'io.reactivex.rxjava2',module: 'rxandroid'
+    }
+    implementation rootProject.ext.dependencies["rxJava"]
+    implementation (rootProject.ext.dependencies["rxAndroid"]){
+        exclude group: 'io.reactivex.rxjava2',module: 'rxjava'
+    }
+}

@@ -1,0 +1,63 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+
+    defaultConfig {
+        if (isModule.toBoolean()) {
+            applicationId "com.melvin.network"
+            versionCode rootProject.ext.android["versionCode"]
+            versionName rootProject.ext.android["versionName"]
+        }
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+    }
+    //用java1.8编译
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    //资源前缀
+    resourcePrefix "network_"
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    //源码存放地址配置,common的清单文件可以放置权限
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                manifest.srcFile 'src/main/java/debug/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+                //集成开发模式下排除debug文件夹中的所有Java文件
+                java {
+                    exclude 'debug/**'
+                }
+            }
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //网络retrofit、log拦截器、适配器
+    api rootProject.ext.dependencies["okhttpLogInterceptor"]
+    api rootProject.ext.dependencies["retrofit"]
+    api (rootProject.ext.dependencies["retrofitConverterGson"]){
+        exclude group: 'com.squareup.retrofit2',module: 'retrofit'
+    }
+    api (rootProject.ext.dependencies["retrofitRxJavaAdapter"]){
+        exclude group: 'com.squareup.retrofit2',module: 'retrofit'
+        exclude group: 'io.reactivex.rxjava2',module: 'rxjava'
+    }
+    //日志
+    compileOnly rootProject.ext.dependencies["log"]
+}

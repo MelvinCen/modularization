@@ -1,0 +1,87 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+
+        //ARouter每個module都需要使用
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+    //用java1.8编译
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    //资源前缀
+    resourcePrefix "base_"
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            buildConfigField "boolean", "isDebug", "true"
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "isDebug", "false"
+        }
+    }
+
+    //源码存放地址配置,common的清单文件可以放置权限
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+        }
+    }
+
+}
+//依赖归集的地方
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //工具组件
+    api project(':tool')
+    //android包
+    api rootProject.ext.dependencies["support-androidx"]
+    api rootProject.ext.dependencies["support-design"]
+    //关于网络
+    //网络retrofit、log拦截器、适配器
+    compileOnly rootProject.ext.dependencies["okhttpLogInterceptor"]
+    compileOnly rootProject.ext.dependencies["retrofit"]
+    compileOnly (rootProject.ext.dependencies["retrofitConverterGson"]){
+        exclude group: 'com.squareup.retrofit2',module: 'retrofit'
+    }
+    compileOnly (rootProject.ext.dependencies["retrofitRxJavaAdapter"]){
+        exclude group: 'com.squareup.retrofit2',module: 'retrofit'
+        exclude group: 'io.reactivex.rxjava2',module: 'rxjava'
+    }
+    api rootProject.ext.dependencies["rxJava"]
+    api (rootProject.ext.dependencies["rxAndroid"]){
+        exclude group: 'io.reactivex.rxjava2',module: 'rxjava'
+    }
+    //黄油刀
+    api rootProject.ext.dependencies["butterknife"]
+    annotationProcessor rootProject.ext.dependencies["butterknifeAnnotationProcessor"]
+    //路由
+    api rootProject.ext.dependencies["ARouter"]
+    //ARouter每個module都需要使用这个
+    annotationProcessor rootProject.ext.dependencies["ARouterAnnotationProcessor"]
+    //RxBinding
+    implementation (rootProject.ext.dependencies["RxBinding"]){
+        exclude group: 'io.reactivex.rxjava2',module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2',module: 'rxandroid'
+    }
+    //StringUtils
+    api rootProject.ext.dependencies["support-lang3"]
+    //日志
+    api rootProject.ext.dependencies["log"]
+
+
+}

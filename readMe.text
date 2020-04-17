@@ -1,0 +1,26 @@
+1,黄油刀在模块化中的使用：1，依赖+注解器 2，在根目前的build.gradle下classPath设置黄油刀插件(androidX使用最新版本的即可，appcompat要注意版本) 3，在使用的module下的build.gradle依赖注解器并在头上apply plugin应用黄油刀
+//黄油刀
+"butterknife"                   : 'com.jakewharton:butterknife:10.1.0',
+"butterknifeAnnotationProcessor": 'com.jakewharton:butterknife-compiler:10.1.0'
+classpath 'com.jakewharton:butterknife-gradle-plugin:10.1.0'
+apply plugin: 'com.jakewharton.butterknife'
+2,返回体无数据，可以使用okHttp3的ResponseBody
+3,ARouter路由使用：1，依赖+注解器 2，在使用的module下的build.gradle依赖注解器 并设置以下代码在defaultConfig中
+//路由
+"ARouter"                       : 'com.alibaba:arouter-api:1.4.1',
+"ARouterAnnotationProcessor"    : 'com.alibaba:arouter-compiler:1.2.2'
+//ARouter每個module都需要使用
+ javaCompileOptions {
+     annotationProcessorOptions {
+         arguments = [AROUTER_MODULE_NAME: project.getName()]
+     }
+ }
+ 4，Android P http网络请求的问题：使用okhttp会出现java.net.UnknownServiceException: CLEARTEXT communication ** not permitted by network security policy
+ 解决方案：
+ A，使用https
+ B，targetSdkVersion降到27以下
+ C，在res下新增一个xml目录，然后创建一个名为：network_security_config.xml 文件（名字自定） ，内容如下，大概意思就是允许开启http请求，然后在APP的AndroidManifest.xml文件下的application标签增加networkSecurityConfig属性
+ <?xml version="1.0" encoding="utf-8"?>
+ <network-security-config>
+     <base-config cleartextTrafficPermitted="true" />
+ </network-security-config>
